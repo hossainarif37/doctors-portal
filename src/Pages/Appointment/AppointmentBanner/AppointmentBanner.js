@@ -4,6 +4,7 @@ import bg from '../../../assets/images/bg.png'
 import { DayPicker } from 'react-day-picker';
 
 
+
 const AppointmentBanner = ({ selectedDate, setSelectedDate }) => {
 
     return (
@@ -17,7 +18,10 @@ const AppointmentBanner = ({ selectedDate, setSelectedDate }) => {
                             mode="single"
                             selected={selectedDate}
                             onSelect={setSelectedDate}
-                        />;
+                        />
+                        <div className='flex justify-center items-center gap-2 text-center text-secondary mt-10'>
+                            <p className='  font-semibold'>Select a date for Appointment</p>
+                        </div>
                     </div>
                 </div>
             </div>
