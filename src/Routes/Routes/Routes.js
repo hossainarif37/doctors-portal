@@ -9,6 +9,10 @@ import PrivateRoute from "../../Pages/Auth/PrivateRoute/PrivateRoute";
 import NotFound from "../../Pages/NotFound";
 import PasswordReset from "../../Pages/Auth/Login/PasswordReset";
 import EmailVerification from "../../Pages/Auth/SignUp/EmailVerification";
+import Review from "../../Pages/Dashboard/Dashboard/Review";
+import MyAppointment from "../../Pages/Dashboard/Dashboard/MyAppointment";
+import AllUsers from "../../Pages/Dashboard/Dashboard/AllUsers";
+import AdminRoute from "../../Pages/Auth/AdminRoute/AdminRoute";
 
 export const router = createBrowserRouter([
     {
@@ -38,7 +42,21 @@ export const router = createBrowserRouter([
 
             {
                 path: '/dashboard',
-                element: <PrivateRoute><Dashboard /></PrivateRoute>
+                element: <PrivateRoute><Dashboard /></PrivateRoute>,
+                children: [
+                    {
+                        path: 'my-appointment',
+                        element: <MyAppointment />
+                    },
+                    {
+                        path: 'review',
+                        element: <Review />
+                    },
+                    {
+                        path: 'all-users',
+                        element: <AdminRoute><AllUsers /></AdminRoute>
+                    }
+                ]
             },
 
         ]

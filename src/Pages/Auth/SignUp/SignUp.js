@@ -2,17 +2,25 @@ import { async } from 'postcss-js';
 import React, { useEffect, useState } from 'react';
 import { useAuthState, useCreateUserWithEmailAndPassword, useSendEmailVerification, useUpdateProfile } from 'react-firebase-hooks/auth';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-hot-toast';
 import { Link, useNavigate } from 'react-router-dom';
 import Loading from '../../../components/Loading';
 import auth from '../../../firebase.init';
+import useToken from '../../../hooks/useToken';
 
 const SignUp = () => {
     const { register, handleSubmit, formState: { errors: formErrors }, reset } = useForm();
-    const [currentUser] = useAuthState(auth);
     const navigate = useNavigate();
     const [sendEmailVerification, sending, verificationError] = useSendEmailVerification(
         auth
     );
+    const [createdUserEmail, setCreatedUserEmail] = useState('');
+    const [token] = useToken(createdUserEmail);
+    console.log(token);
+    if (token) {
+        navigate('/');
+    }
+
 
 
 
@@ -32,20 +40,30 @@ const SignUp = () => {
     }
 
 
-    const handleLogin = async (data) => {
+    const handleSignUp = async (data) => {
         console.log(formErrors);
-        await createUserWithEmailAndPassword(data?.email, data?.password);
-        await updateProfile({ displayName: data.name });
-        // const success = await sendEmailVerification();
-        // if (success) {
-        //     alert('Sent email');
-        //     navigate('/email-verification')
-        // }
+        const userCreate = await createUserWithEmailAndPassword(data?.email, data?.password);
+        const updateUser = await updateProfile({ displayName: data.name });
+        saveUser(data.name, data.email)
         reset();
+
     }
-    // if (user) {
-    //     navigate('/')
-    // }
+    const saveUser = (name, email) => {
+        const user = { name, email };
+        fetch('http://localhost:5000/users', {
+            method: 'POST',
+            headers: { 'Content-type': 'application/json' },
+            body: JSON.stringify(user)
+
+        })
+            .then(res => res.json())
+            .then(data => {
+                if (data.acknowledged) {
+                    toast.success('User create successfully');
+                    setCreatedUserEmail(email);
+                }
+            })
+    }
 
 
     return (
@@ -53,7 +71,7 @@ const SignUp = () => {
             <div className="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
                 <div className="card-body">
                     {/* form */}
-                    <form onSubmit={handleSubmit(handleLogin)}>
+                    <form onSubmit={handleSubmit(handleSignUp)}>
                         <h1 className='text-xl text-center mb-5'>Sign Up</h1>
                         <div className="form-control">
                             <label className="label">

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import BookingModal from '../BookingModal/BookingModal';
+import React from 'react';
 
-const AppointmentOptions = ({ appointmentOptions, selectedDate }) => {
+const AppointmentOptions = ({ appointmentOptions, selectedDate, refetch, setTreatment }) => {
     const { name, slots } = appointmentOptions;
-    const [treatment, setTreatment] = useState(null)
+
+    console.log();
+
 
     return (
         <div className="card shadow-xl">
@@ -20,7 +21,6 @@ const AppointmentOptions = ({ appointmentOptions, selectedDate }) => {
                         htmlFor="booking-modal"
                         className="btn btn-primary text-white font-bold  bg-gradient-to-r from-secondary to-primary"
                     >Book Appointment</label>
-                    {treatment && <BookingModal treatment={treatment} setTreatment={setTreatment} selectedDate={selectedDate} />}
                 </div>
             </div>
         </div>

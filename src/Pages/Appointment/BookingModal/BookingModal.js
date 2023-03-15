@@ -1,9 +1,10 @@
 import { format } from 'date-fns';
 import React from 'react';
 import { useAuthState } from 'react-firebase-hooks/auth';
+import { toast } from 'react-hot-toast';
 import auth from '../../../firebase.init';
 
-const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
+const BookingModal = ({ treatment, selectedDate, setTreatment, refetch }) => {
     const { name: treatmentName, slots } = treatment;
     const date = format(selectedDate, 'PP');
     const [user] = useAuthState(auth);
@@ -22,11 +23,32 @@ const BookingModal = ({ treatment, selectedDate, setTreatment }) => {
             email,
             phone,
             slot,
-            date
+            appointmentDate: date
         }
         console.log(booking);
-        setTreatment(null)
+
+        fetch('http://localhost:5000/bookings', {
+            method: 'POST',
+            body: JSON.stringify(booking),
+            headers: {
+                'Content-type': 'application/json; charset=UTF-8',
+            },
+        })
+            .then((response) => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.acknowledged) {
+                    toast.success('Booking Successful');
+                    setTreatment(null);
+                    refetch()
+
+                }
+                else {
+                    toast.error(data.message)
+                }
+            })
     }
+
 
 
     return (

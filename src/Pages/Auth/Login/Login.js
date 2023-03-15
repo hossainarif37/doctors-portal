@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import auth from '../../../firebase.init';
 import { useAuthState, useSignInWithEmailAndPassword, useSignInWithGoogle } from 'react-firebase-hooks/auth';
 import Loading from '../../../components/Loading';
 import { useForm } from 'react-hook-form';
+import { async } from 'postcss-js';
+import useToken from '../../../hooks/useToken';
 
 const Login = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const [user] = useAuthState(auth);
+    const [loginUserEmail, setLoginUserEmail] = useState('');
+    const [token] = useToken(loginUserEmail);
 
     const from = location.state?.from?.pathname || '/';
     const [signInWithGoogle, googleUser, googleLoading, googleError] = useSignInWithGoogle(auth);
@@ -20,23 +24,25 @@ const Login = () => {
         error,
     ] = useSignInWithEmailAndPassword(auth);
     const { register, handleSubmit, watch, formState: { errors: formErrors } } = useForm();
-
-    const handleLogin = (data) => {
-        console.log(data);
-        signInWithEmailAndPassword(data.email, data.password);
-    }
-
-
-
     if (loading || googleLoading) {
-
         return <Loading />
     }
-
-    if (user) {
+    if (token) {
         navigate(from, { replace: true });
-
     }
+
+    const handleLogin = async (data) => {
+        const isSignIn = await signInWithEmailAndPassword(data.email, data.password);
+        if (isSignIn.user) {
+            setLoginUserEmail(data.email);
+        }
+    }
+
+
+
+
+
+
     return (
         <div className="hero min-h-screen">
 
